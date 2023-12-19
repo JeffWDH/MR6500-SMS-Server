@@ -50,3 +50,16 @@ Make sure to add the & so the server will launch and the init script can exit.
 http://[ip of your M6 Pro]:767
 
 Enter the password you provided in the sms_server script and a message (limited to 160 characters) and click submit. You should receive a SMS on the phone number you defined in the script. If not, by default the log of the communication with the modem built into the M6 will show and provide insight into why it didn't work.
+
+Example using curl:
+```
+$ curl "http://192.168.1.1:767/action?password=password&message=hello+world"
+Debug log:
+AT+CMGF=1
+OK
+AT+CMGS="+12223334567"
+> hello world
+
++CMGS: 70
+Status: Message sent.
+```
