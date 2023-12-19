@@ -1,0 +1,116 @@
+#!/usr/bin/perl
+use IO::Socket::INET;
+
+# Automatically get the LAN GW and listen only on that IP
+my $listen_ip = `/usr/bin/dx router.GwIpAddr`;
+
+# TCP port to listen to
+my $listen_port = '767'; #SMS
+
+# Password required to send messages
+my $password = 'password';
+
+# Phone number messages should be sent to
+my $phone_number = '+12223334567';
+
+# Debug Mode - Output AT command status to browser
+my $debug_mode = 1; # 1 = On, 0 = Off
+
+# Create listening socket
+my $server = new IO::Socket::INET (
+  LocalHost => $listen_ip,
+  LocalPort => $listen_port,
+  Proto => 'tcp',
+  Listen => 5,
+  Reuse => 1
+);
+die "Error: Cannot create socket - $!\n" unless $server;
+
+$SIG{INT} = sub { $server->close(); exit 0; };
+
+# Main loop
+while ($client = $server->accept()) {
+  $client->autoflush;
+  my $request = <$client>;
+
+  # Show form if accessing /
+  if ($request =~ m|^GET / HTTP/1.[01]|) {
+    print $client "HTTP/1.0 200 OK\n";
+    print $client "Content-Type: text/html\n\n";
+    print $client "
+    <!DOCTYPE html>
+    <html>
+      <body>
+        <h2>SMS Server</h2>
+        <form action=\"/action\" method=\"get\">
+          <p>Password: <input type=\"password\" id=\"password\" name=\"password\" maxlength=\"64\"></p>
+          Message:<br>
+          <textarea id=\"message\" name=\"message\" rows=\"4\" cols=\"50\" maxlength=\"160\"></textarea><br>
+          <input type=\"submit\" value=\"Submit\">
+        </form>
+        <p>Note: Message length is limited to 160 characters.</p>
+      </body>
+    </html>";
+  } elsif ($request =~ m|^GET /action(.+) HTTP/1.[01]|) {
+    # Process input for /action
+    print $client "HTTP/1.0 200 OK\n";
+    print $client "Content-Type: text/plain\n\n";
+
+    # Get password and message from GET
+    my ($password_arg) = $request =~ /password=([^&\s]*)/;
+    my ($message_arg) = $request =~ /message=([^&\s]*)/;
+
+    # URLDecode input
+    $password_arg =~ s/\+/ /g;
+    $password_arg =~ s/%([A-Fa-f\d]{2})/chr hex $1/eg;
+    $message_arg =~ s/\+/ /g;
+    $message_arg =~ s/%([A-Fa-f\d]{2})/chr hex $1/eg;
+
+    if ($password_arg eq $password) {
+      if (length($message_arg) <= 160) {
+        open my $FH, '+<', '/dev/smd7';
+        $FH->autoflush;
+        print $FH "\r";
+        print $FH "AT+CMGF=1\r";
+        sleep(0.1);
+        print $FH "AT+CMGS=\"$phone_number\"\r";
+        sleep(0.1);
+        print $FH "$message_arg";
+        sleep(0.1);
+        print $FH "\x1a";
+
+        if ($debug_mode) {
+          print $client "Debug log:\n";
+        }
+
+        while(my $response = <$FH>) {
+          if ($debug_mode) {
+            print $client $response;
+          }
+
+          if ($response =~ m/\+CMGS: /) {
+            print $client "Status: Message sent.\n";
+            last;
+          }
+
+          if ($response =~ m/ERROR/) {
+            print $client "Status: Error sending message: $response\n";
+            last;
+          }
+        }
+        close($FH);
+      } else {
+        print $client "Status: Error - Message is longer than 160 characters.\n";
+      }
+    } else {
+      # Password does not match
+      print $client "Status: Error - Access denied.\n";
+    }
+  } else {
+    # Error if not accessing / or /action
+    print $client "HTTP/1.0 400 BAD REQUEST\n";
+    print $client "Content-Type: text/plain\n\n";
+    print $client "Status: Error - Bad request.\n";
+  }
+  close $client;
+}
