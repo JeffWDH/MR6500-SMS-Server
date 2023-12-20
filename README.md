@@ -4,19 +4,20 @@ Netgear Nighthawk M6 Pro / MR6500 SMS HTTP Server
 Additional documentation can be found here:  
 https://www.tarball.ca/posts/netgear_nighthawk_m6_pro_sms_server/
 
-Note: This tool was tested on an AT&T branded Nighthawk M6 Pro / MR6500 running the following software versions:
-Firmware Version: NTGX65_10.04.22.01
-Modem Version: MPSS.DE.1.0-02593-OLYMPIC_GENALL_PACK-1
-GUI Version: MR6500-1A1NAS_05.00.63.00
-
-**There is no warranty included with this software so use at your own risk. If you brick your device it's on you.**
-
 # The Problem
 Netgear decided to remove the ability to send SMS messages on the Nighthawk M6. Having SMS sending capability is handy, especially for alerting on events, such as Internet outages. This workaround implements a simple HTTP server using Perl that can be used to send messages through the device. Perl was chosen begrudgingly because it was the only capable scripting language that comes by default with the device.
 
 # Prerequisite
 You must have access to the root telnet shell of the device. You can find details at the URL below how to do this. This is outside of the scope of this tool and no assistance will be provided.  
 https://github.com/0xBAADF0OD/netgear_mr6400/tree/main/netgear-AT-commands#enable-root-telnet-port-23
+
+# Disclaimer
+Note: This tool was tested on an AT&T branded Nighthawk M6 Pro / MR6500 running the following software versions:
+Firmware Version: NTGX65_10.04.22.01
+Modem Version: MPSS.DE.1.0-02593-OLYMPIC_GENALL_PACK-1
+GUI Version: MR6500-1A1NAS_05.00.63.00
+
+**There is no warranty included with this software so use at your own risk. If you brick your device it's on you.**
 
 # How to install
 1. Telnet to the root shell of the M6.
