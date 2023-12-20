@@ -68,7 +68,7 @@ while ($client = $server->accept()) {
 
     if ($password_arg eq $password) {
       if (length($message_arg) <= 160) {
-        open my $FH, '+<', '/dev/smd7';
+        open my $FH, '+<', '/dev/smd8';
         $FH->autoflush;
         print $FH "\r";
         print $FH "AT+CMGF=1\r";
