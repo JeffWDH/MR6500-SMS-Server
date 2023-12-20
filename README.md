@@ -12,10 +12,10 @@ You must have access to the root telnet shell of the device. You can find detail
 https://github.com/0xBAADF0OD/netgear_mr6400/tree/main/netgear-AT-commands#enable-root-telnet-port-23
 
 # Disclaimer
-Note: This tool was tested on an AT&T branded Nighthawk M6 Pro / MR6500 running the following software versions:
-Firmware Version: NTGX65_10.04.22.01
-Modem Version: MPSS.DE.1.0-02593-OLYMPIC_GENALL_PACK-1
-GUI Version: MR6500-1A1NAS_05.00.63.00
+Note: This tool was tested on an AT&T branded Nighthawk M6 Pro / MR6500 running the following software versions:  
+Firmware Version: NTGX65_10.04.22.01  
+Modem Version: MPSS.DE.1.0-02593-OLYMPIC_GENALL_PACK-1  
+GUI Version: MR6500-1A1NAS_05.00.63.00  
 
 **There is no warranty included with this software so use at your own risk. If you brick your device it's on you.**
 
