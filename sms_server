@@ -68,37 +68,40 @@ while ($client = $server->accept()) {
 
     if ($password_arg eq $password) {
       if (length($message_arg) <= 160) {
-        open my $FH, '+<', '/dev/smd8';
-        $FH->autoflush;
-        print $FH "\r";
-        print $FH "AT+CMGF=1\r";
-        sleep(0.1);
-        print $FH "AT+CMGS=\"$phone_number\"\r";
-        sleep(0.1);
-        print $FH "$message_arg";
-        sleep(0.1);
-        print $FH "\x1a";
+        if (open my $FH, '+<', '/dev/smd8') {
+          $FH->autoflush;
+          print $FH "\r";
+          print $FH "AT+CMGF=1\r";
+          sleep(0.1);
+          print $FH "AT+CMGS=\"$phone_number\"\r";
+          sleep(0.1);
+          print $FH "$message_arg";
+          sleep(0.1);
+          print $FH "\x1a";
 
-        if ($debug_mode) {
-          print $client "Debug log:\n";
-        }
-
-        while(my $response = <$FH>) {
           if ($debug_mode) {
-            print $client $response;
+            print $client "Debug log:\n";
           }
 
-          if ($response =~ m/\+CMGS: /) {
-            print $client "Status: Message sent.\n";
-            last;
-          }
+          while(my $response = <$FH>) {
+            if ($debug_mode) {
+              print $client $response;
+            }
 
-          if ($response =~ m/ERROR/) {
-            print $client "Status: Error sending message: $response\n";
-            last;
+            if ($response =~ m/\+CMGS: /) {
+              print $client "Status: Message sent.\n";
+              last;
+            }
+
+            if ($response =~ m/ERROR/) {
+              print $client "Status: Error sending message: $response\n";
+              last;
+            }
           }
+          close($FH);
+        } else {
+          print $client "Status: Error - Unable to open /dev/smd8.\n";
         }
-        close($FH);
       } else {
         print $client "Status: Error - Message is longer than 160 characters.\n";
       }
