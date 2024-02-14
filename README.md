@@ -2,7 +2,7 @@
 Netgear Nighthawk M6 Pro / MR6500 SMS HTTP Server
 
 Additional documentation can be found here:  
-https://www.tarball.ca/posts/netgear_nighthawk_m6_pro_sms_server/
+[https://www.tarball.ca/posts/netgear_nighthawk_m6_pro_sms_server/](https://www.tarball.ca/posts/netgear-nighthawk-m6-pro-sms-server/)
 
 # The Problem
 Netgear decided to remove the ability to send SMS messages on the Nighthawk M6. Having SMS sending capability is handy, especially for alerting on events, such as Internet outages. This workaround implements a simple HTTP server using Perl that can be used to send messages through the device. Perl was chosen begrudgingly because it was the only capable scripting language that comes by default with the device.
